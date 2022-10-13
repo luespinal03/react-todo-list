@@ -17,7 +17,8 @@ const ToDoListContainer = (props) => {
   return (
     <div>
       {props.toDoList.map((toDoItem, index) => {
-        return <ToDoItem toDoItem={toDoItem} />
+        // 2. In the code below we are passing handleUpdateToDo into <ToDoItem/> as a props since the <ToDoItem/> is inside the <ToDoListContainer/> and we originally passed handleUpdateTodo directly into <ToDoListContainer/>
+        return <ToDoItem toDoItem={toDoItem} handleUpdateToDo={props.handleUpdateToDo} />
       })}
     </div>
   )
@@ -25,16 +26,17 @@ const ToDoListContainer = (props) => {
 
 
 const ToDoItem = (props) => {
-  console.log(props.toDoItem);
+  console.log(props.toDoItem.completedDate);
   return (
     <div>
       <h2>{props.toDoItem.title}</h2>
       <p>Priority: {props.toDoItem.priority}</p>
       <p>Creation Date: {props.toDoItem.creationDate}</p>
-      <p>Completed Date: {props.toDoItem.isComplete}</p>
       {/* line below says if completedDate is there then(&&) show it to the user */}
-      {props.toDoItem.completedDate && <p>{props.toDoItem.completedDate}</p>}
+      {props.toDoItem.completedDate && <p> Completed Date: {props.toDoItem.completedDate}</p>}
       <p>Description: {props.toDoItem.description}</p>
+      {/* 3. In the code below we are passing handleUpdateToDo into button as a props with the required parameters that we need to check for (toDoItem.title and toDoItem.createdDate) */}
+      <button onClick={() => { props.handleUpdateToDo(props.toDoItem.title, props.toDoItem.createdDate) }} >Toggle Complete</button>
     </div>
   )
 }
@@ -69,10 +71,11 @@ const ToDoForm = (props) => {
       }}></textarea>
       <br />
 
+
+      {/* // props here is allowing us to invoke handleAddTodo from another scope because its not global and the only way we can invoke it in here is by props. Here we are passing our three parameters that are subject to change based on user input */}
       <button onClick={() => {
         props.handleAddTodo(title, priority, description)
       }}>Add ToDo</button>
-
 
 
     </div >
@@ -117,6 +120,36 @@ const App = () => {
     setToDoList(toDoListCopy)
   }
 
+  const handleUpdateToDo = (title, createdDate) => {
+    const toDoListCopy = [...toDoList]
+
+    let listCopy = toDoListCopy.map((todo) => {
+      // Code below says if the todo.title matches the inputed title by the user and the createdDate matches the createdDate inputed by the user
+      if (todo.title === title && todo.createdDate === createdDate) {
+        // if both parameters match and todo.isComplete is false then set it to true and update the completedDate to new Date()
+        if (todo.isComplete === false) {
+          todo.isComplete = true
+          todo.completedDate = new Date().toString()
+          // if nothing matches then do whats inside the brackets
+        } else {
+          todo.isComplete = false
+          todo.completedDate = null
+        }
+
+        // todo.isComplete = !todo.isComplete
+        // todo.completedDate = todo.completedDate !== null ? new Date() : null
+
+        return todo
+
+      } else {
+        return todo
+      }
+    })
+    console.log("List Copy: ")
+    console.log(listCopy)
+    // When the code belo runs, the ToDoList gets updated with the parameters we passed through listCopy (so the validations that allow us to toggle)
+    setToDoList(listCopy)
+  }
 
   // JSX BELOW
   return (
@@ -124,7 +157,9 @@ const App = () => {
       <h1>Todo List</h1>
       {/* code below is passing toDoList (the array of one object from above) as a prop into the TodoListContainer component */}
       <ToDoForm handleAddTodo={handleAddTodo} />
-      <ToDoListContainer toDoList={toDoList} />
+      {/* 1. below we are passing handleUpdateToDo={handleUpdateToDo} into <ToDoListContainer/> because thats where we have access to <ToDoItem/> */}
+      <ToDoListContainer toDoList={toDoList} handleUpdateToDo={handleUpdateToDo} />
+
     </div>
   );
 }
