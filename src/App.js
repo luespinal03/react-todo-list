@@ -32,8 +32,8 @@ const ToDoItem = (props) => {
       <p>Priority: {props.toDoItem.priority}</p>
       <p>Creation Date: {props.toDoItem.creationDate}</p>
       <p>Completed Date: {props.toDoItem.isComplete}</p>
-      {/* if completedDate is not null then(&&) show it to the user */}
-      {props.toDoItem.completedDate !== null && <p>{props.toDoItem.completedDate}</p>}
+      {/* line below says if completedDate is there then(&&) show it to the user */}
+      {props.toDoItem.completedDate && <p>{props.toDoItem.completedDate}</p>}
       <p>Description: {props.toDoItem.description}</p>
     </div>
   )
@@ -41,7 +41,7 @@ const ToDoItem = (props) => {
 
 
 
-const ToDoForm = () => {
+const ToDoForm = (props) => {
   // only 3 properties that need user input which is why they are the only ones we are using here
   const [title, setTitle] = useState("");
   const [priority, setPriority] = useState("");
@@ -69,9 +69,13 @@ const ToDoForm = () => {
       }}></textarea>
       <br />
 
+      <button onClick={() => {
+        props.handleAddTodo(title, priority, description)
+      }}>Add ToDo</button>
 
 
-    </div>
+
+    </div >
   )
 }
 
@@ -88,7 +92,7 @@ const ToDoForm = () => {
 
 const App = () => {
   // the code bwlow is declaring the data thats going to be initially be passed around
-  const [toDoList, useToDoList] = useState([{
+  const [toDoList, setToDoList] = useState([{
     title: "Implement ToDo List",
     priority: "High",
     isComplete: false,
@@ -97,12 +101,29 @@ const App = () => {
     completedDate: null
   }])
 
+  const handleAddTodo = (title, priority, description) => {
+    let newToDo = {
+      title: title,
+      priority: priority,
+      isComplete: false,
+      description: description,
+      creationDate: new Date().toString(),
+      completedDate: null,
+    }
+    // line below we are SPREADING (...(or opening)) the current toDoList so we can insert the new object into it, in this case it being newToDo
+    const toDoListCopy = [...toDoList, newToDo]
+
+    // line belows calls the most currently updated to-do list with the new object pushed into it
+    setToDoList(toDoListCopy)
+  }
+
+
   // JSX BELOW
   return (
     <div className="App-header">
       <h1>Todo List</h1>
       {/* code below is passing toDoList (the array of one object from above) as a prop into the TodoListContainer component */}
-      <ToDoForm />
+      <ToDoForm handleAddTodo={handleAddTodo} />
       <ToDoListContainer toDoList={toDoList} />
     </div>
   );
