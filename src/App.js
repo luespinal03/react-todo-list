@@ -18,7 +18,7 @@ const ToDoListContainer = (props) => {
     <div>
       {props.toDoList.map((toDoItem, index) => {
         // 2. In the code below we are passing handleUpdateToDo into <ToDoItem/> as a props since the <ToDoItem/> is inside the <ToDoListContainer/> and we originally passed handleUpdateTodo directly into <ToDoListContainer/>
-        return <ToDoItem toDoItem={toDoItem} handleUpdateToDo={props.handleUpdateToDo} />
+        return <ToDoItem toDoItem={toDoItem} handleUpdateToDo={props.handleUpdateToDo} className="To-do-item" />
       })}
     </div>
   )
@@ -48,15 +48,20 @@ const ToDoForm = (props) => {
   const [title, setTitle] = useState("");
   const [priority, setPriority] = useState("");
   const [description, setDescription] = useState("");
+  // only 3 properties that need user input which is why they are the only ones we are using here
+
 
   return (
     <div>
       <label>Title </label>
+      {/* on change set the title to be w.e gets input here by the user */}
       <input type="text" onChange={(e) => { setTitle(e.target.value) }} />
       <br />
 
       <label>Priority </label>
+      {/* on change set the priority to be w.e gets input here by the user */}
       <select onChange={(e) => { setPriority(e.target.value) }}>
+        {/* below the user will have three options to choose from to update the priority with */}
         <option value="">--Please choose an option--</option>
         <option value="Low">Low</option>
         <option value="Medium">Medium</option>
@@ -66,6 +71,7 @@ const ToDoForm = (props) => {
 
       <label>Description </label>
       {/* <textarea></textarea> is used for large text values. Allows the user to resize the area as needed by clicking and dragging on the bottom right of the box. */}
+      {/* on change set the description to be w.e gets input here by the user */}
       <textarea onChange={(e) => {
         setDescription(e.target.value)
       }}></textarea>
@@ -76,8 +82,6 @@ const ToDoForm = (props) => {
       <button onClick={() => {
         props.handleAddTodo(title, priority, description)
       }}>Add ToDo</button>
-
-
     </div >
   )
 }
@@ -104,6 +108,11 @@ const App = () => {
     completedDate: null
   }])
 
+
+
+
+
+  // function below is taking the three properties that have been changed by the user and creating a new ToDo object, spreading toDoList (because thats where all of our objects are currently living) and inserting our new object into it
   const handleAddTodo = (title, priority, description) => {
     let newToDo = {
       title: title,
@@ -116,10 +125,17 @@ const App = () => {
     // line below we are SPREADING (...(or opening)) the current toDoList so we can insert the new object into it, in this case it being newToDo
     const toDoListCopy = [...toDoList, newToDo]
 
-    // line belows calls the most currently updated to-do list with the new object pushed into it
+    // line belows calls the most currently updated to-do list with the new object pushed into it after being spread on line 126
     setToDoList(toDoListCopy)
   }
 
+
+
+
+
+
+
+  // function below is handling the toggle switch that allows the user to determine if a tod item has been completed or not
   const handleUpdateToDo = (title, createdDate) => {
     const toDoListCopy = [...toDoList]
 
@@ -136,9 +152,6 @@ const App = () => {
           todo.completedDate = null
         }
 
-        // todo.isComplete = !todo.isComplete
-        // todo.completedDate = todo.completedDate !== null ? new Date() : null
-
         return todo
 
       } else {
@@ -151,15 +164,19 @@ const App = () => {
     setToDoList(listCopy)
   }
 
+
+
+
+
   // JSX BELOW
   return (
     <div className="App-header">
       <h1>Todo List</h1>
+      {/* line 157 is where our data handling process begins */}
       {/* code below is passing toDoList (the array of one object from above) as a prop into the TodoListContainer component */}
       <ToDoForm handleAddTodo={handleAddTodo} />
       {/* 1. below we are passing handleUpdateToDo={handleUpdateToDo} into <ToDoListContainer/> because thats where we have access to <ToDoItem/> */}
       <ToDoListContainer toDoList={toDoList} handleUpdateToDo={handleUpdateToDo} />
-
     </div>
   );
 }
